@@ -8,6 +8,6 @@ const router: Router = Router();
 
 router.post("/users", authenticateToken, UserController.createUser);
 router.post("/users/authenticate", UserController.authenticateUser);
-router.put("/users", UserController.updateUserPassword);
+router.put("/users", authenticateToken, UserController.updateUserPassword);
 
 export default router;

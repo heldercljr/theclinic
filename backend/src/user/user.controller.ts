@@ -29,10 +29,10 @@ export async function authenticateUser(request: Request, response: Response): Pr
 }
 
 export async function updateUserPassword(request: Request, response: Response): Promise<void> {
-	const { document, oldPassWord, newPassWord } = request.body as PassWordUpdateDTO;
+	const { oldPassWord, newPassWord } = request.body as PassWordUpdateDTO;
 
 	const result = await UserService.changeUserPassword({
-		document,
+		document: request.user?.document,
 		oldPassWord,
 		newPassWord
 	} as PassWordUpdateDTO);
