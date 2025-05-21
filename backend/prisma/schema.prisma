@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum AuditType {
+  BENEFICIARY_CREATION
+  BENEFICIARY_READ
+  BENEFICIARY_UPDATE
+  BENEFICIARY_DELETION
+  SOLICITATION_CREATION
+  SOLICITATION_UPDATE
+  SOLICITATION_DELETION
+  SPECIALITY_CREATION
+  SPECIALITY_UPDATE
+  SPECIALITY_DELETION
+  USER_CREATION
+  USER_AUTHENTICATION
+  USER_UPDATE
+  USER_DELETION
+}
+
+model Audit {
+  id          String    @id @default(uuid())
+  description String
+  type        AuditType
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [document])
+  userId      String
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+model Beneficiary {
+  id             String         @id @default(uuid())
+  name           String
+  birthDate      DateTime
+  gender         Gender
+  generalRecord  String?        @unique
+  personalRecord String?        @unique
+  motherName     String?
+  referee        String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  comorbidities  Comorbidity[]
+  responsible    User           @relation(fields: [responsibleId], references: [document])
+  responsibleId  String         @unique
+  address        Address?
+  phoneNumbers   PhoneNumber[]
+  voterCard      VoterCard?
+  solicitations  Solicitation[]
+}
+
+model Comorbidity {
+  id            String       @id @default(uuid())
+  name          String
+
+  beneficiary   Beneficiary  @relation(fields: [beneficiaryId], references: [id], onDelete: Cascade)
+  beneficiaryId String       @unique
+}
+
+model Solicitation {
+  id            String        @id @default(uuid())
+  date          DateTime
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  beneficiary   Beneficiary   @relation(fields: [beneficiaryId], references: [id])
+  beneficiaryId String        @unique
+  responsible   User          @relation(fields: [responsibleId], references: [document])
+  responsibleId String        @unique
+  appointments  Appointment[]
+}
+
+model Speciality {
+  id           String        @id @default(uuid())
+  name         String
+
+  appointments Appointment[]
+}
+
+model Appointment {
+  id             String       @id @default(uuid())
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  solicitation   Solicitation @relation(fields: [solicitationId], references: [id])
+  solicitationId String       @unique
+  speciality     Speciality   @relation(fields: [specialityId], references: [id])
+  specialityId   String       @unique
+}
+
+enum Role {
+  ADMINISTRATOR
+  EMPLOYEE
+}
+
+model User {
+  name          String
+  document      String                 @id @unique
+  passWord      String
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+
+  role          Role                   @default(EMPLOYEE)
+  audits        Audit[]
+  solicitations Solicitation[]
+  beneficiaries Beneficiary[]
+}
+
+model Address {
+  id            String       @id @default(uuid())
+  space         String?
+  number        String?
+  complement    String?
+  neighborhood  String?
+  city          String?
+  state         String?
+  zip           String?
+
+  beneficiary   Beneficiary? @relation(fields: [beneficiaryId], references: [id], onDelete: Cascade)
+  beneficiaryId String?      @unique
+}
+
+model PhoneNumber {
+  id            String      @id @default(uuid())
+  number        String
+
+  beneficiary   Beneficiary @relation(fields: [beneficiaryId], references: [id], onDelete: Cascade)
+  beneficiaryId String      @unique
+}
+
+model VoterCard {
+  id           String       @id @default(uuid())
+  registration String?
+  section      String?
+  zone         String?
+
+  beneficiary  Beneficiary? @relation(fields: [beneficiaryId], references: [id], onDelete: Cascade)
+  beneficiaryId String?     @unique
+}
