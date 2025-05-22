@@ -27,7 +27,7 @@ type Beneficiary = SimpleBeneficiary & {
 	address: Omit<Address, "id" | "beneficiaryId"> | null;
 	comorbidities: Omit<Comorbidity, "id" | "beneficiaryId">[];
 	phoneNumbers: Omit<PhoneNumber, "id" | "beneficiaryId">[];
-	responsible: Pick<User, "document" | "name">;
+	responsible: Pick<User, "document">;
 	voterCard: Omit<VoterCard, "id" | "beneficiaryId"> | null;
 };
 
