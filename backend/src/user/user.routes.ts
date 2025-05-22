@@ -1,13 +1,13 @@
 import { Router } from "express";
 
-import * as UserController from "./user.controller";
+import * as Controller from "./user.controller";
 
 import { authenticateToken } from "../middlewares/authentication.middleware";
 
 const router: Router = Router();
 
-router.post("/users", authenticateToken, UserController.createUser);
-router.post("/users/authenticate", UserController.authenticateUser);
-router.put("/users", authenticateToken, UserController.updateUserPassword);
+router.post("/users", authenticateToken, Controller.createUser);
+router.post("/users/authenticate", Controller.authenticateUser);
+router.put("/users", authenticateToken, Controller.updateUserPassword);
 
 export default router;
