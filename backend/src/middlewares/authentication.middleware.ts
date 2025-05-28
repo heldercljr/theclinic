@@ -19,7 +19,7 @@ export function authenticateToken(request: Request, response: Response, next: Ne
 	} else {
 		verify(token, process.env.JWT_SECRET as string, (error, user) => {
 			if (error) {
-				response.status(403).json({ message: error.message, statusCode: 403 });
+				response.status(403).json({ message: "Token expired", statusCode: 403 });
 			} else {
 				request.user = user as UserPayloadDTO;
 
