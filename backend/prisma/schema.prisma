@@ -42,19 +42,19 @@ enum Gender {
 
 model Beneficiary {
   id             String         @id @default(uuid())
-  name           String
+  name           String         @db.VarChar(100)
   birthDate      DateTime
   gender         Gender
-  generalRecord  String?        @unique
-  personalRecord String?        @unique
-  motherName     String?
-  referee        String?
+  generalRecord  String?        @unique @db.VarChar(15)
+  personalRecord String?        @unique @db.Char(11)
+  motherName     String?        @db.VarChar(100)
+  referee        String?        @db.VarChar(100)
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
   comorbidities  Comorbidity[]
   responsible    User           @relation(fields: [responsibleId], references: [document])
-  responsibleId  String         @unique
+  responsibleId  String
   address        Address?
   phoneNumbers   PhoneNumber[]
   voterCard      VoterCard?
@@ -63,10 +63,10 @@ model Beneficiary {
 
 model Comorbidity {
   id            String       @id @default(uuid())
-  name          String
+  name          String       @db.VarChar(150)
 
   beneficiary   Beneficiary  @relation(fields: [beneficiaryId], references: [id], onDelete: Cascade)
-  beneficiaryId String       @unique
+  beneficiaryId String
 }
 
 model Solicitation {
@@ -84,7 +84,7 @@ model Solicitation {
 
 model Speciality {
   id           String        @id @default(uuid())
-  name         String
+  name         String        @db.VarChar(150)
 
   appointments Appointment[]
 }
@@ -95,9 +95,9 @@ model Appointment {
   updatedAt      DateTime     @updatedAt
 
   solicitation   Solicitation @relation(fields: [solicitationId], references: [id])
-  solicitationId String       @unique
+  solicitationId String
   speciality     Speciality   @relation(fields: [specialityId], references: [id])
-  specialityId   String       @unique
+  specialityId   String
 }
 
 enum Role {
@@ -106,8 +106,8 @@ enum Role {
 }
 
 model User {
-  name          String
-  document      String                 @id @unique
+  name          String                 @db.VarChar(100)
+  document      String                 @id @unique @db.Char(11)
   passWord      String
   createdAt     DateTime               @default(now())
   updatedAt     DateTime               @updatedAt
@@ -118,15 +118,45 @@ model User {
   beneficiaries Beneficiary[]
 }
 
+enum State {
+  AC
+  AL
+  AP
+  AM
+  BA
+  CE
+  DF
+  ES
+  GO
+  MA
+  MT
+  MS
+  MG
+  PA
+  PB
+  PR
+  PE
+  PI
+  RJ
+  RN
+  RS
+  RO
+  RR
+  SC
+  SP
+  SE
+  TO
+}
+
 model Address {
   id            String       @id @default(uuid())
-  space         String?
-  number        String?
-  complement    String?
-  neighborhood  String?
-  city          String?
-  state         String?
-  zip           String?
+  space         String?      @db.VarChar(100)
+  number        String?      @db.VarChar(10)
+  complement    String?      @db.VarChar(50)
+  neighborhood  String?      @db.VarChar(50)
+  city          String?      @db.VarChar(50)
+  state         State?
+  zip           String?      @db.Char(8)
 
   beneficiary   Beneficiary? @relation(fields: [beneficiaryId], references: [id], onDelete: Cascade)
   beneficiaryId String?      @unique
@@ -134,17 +164,17 @@ model Address {
 
 model PhoneNumber {
   id            String      @id @default(uuid())
-  number        String
+  number        String      @db.VarChar(13)
 
   beneficiary   Beneficiary @relation(fields: [beneficiaryId], references: [id], onDelete: Cascade)
-  beneficiaryId String      @unique
+  beneficiaryId String
 }
 
 model VoterCard {
   id           String       @id @default(uuid())
-  registration String?
-  section      String?
-  zone         String?
+  registration String?      @db.Char(12)
+  section      String?      @db.Char(4)
+  zone         String?      @db.Char(4)
 
   beneficiary  Beneficiary? @relation(fields: [beneficiaryId], references: [id], onDelete: Cascade)
   beneficiaryId String?     @unique

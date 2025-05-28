@@ -13,15 +13,15 @@ import {
 	VoterCard
 } from "@prisma/client";
 
-const prisma = new PrismaClient();
-
-const AddressRepository = prisma.address;
-const AppointmentRepository = prisma.appointment;
-const AuditRepository = prisma.audit;
-const BeneficiaryRepository = prisma.beneficiary;
-const SolicitationRepository = prisma.solicitation;
-const SpecialityRepository = prisma.speciality;
-const UserRepository = prisma.user;
+const {
+	address: AddressRepository,
+	appointment: AppointmentRepository,
+	audit: AuditRepository,
+	beneficiary: BeneficiaryRepository,
+	solicitation: SolicitationRepository,
+	speciality: SpecialityRepository,
+	user: UserRepository
+} = new PrismaClient();
 
 type Beneficiary = SimpleBeneficiary & {
 	address: Omit<Address, "id" | "beneficiaryId"> | null;
