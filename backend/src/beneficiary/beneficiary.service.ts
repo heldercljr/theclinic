@@ -1,13 +1,12 @@
 import { BeneficiaryDTO } from "./beneficiary.dto";
 import { ResponseDTO } from "../interfaces/response.dto";
+import { PaginationDTO } from "../interfaces/pagination.dto";
 import {
-	Address,
 	AuditRepository,
 	Beneficiary,
 	BeneficiaryRepository,
 	User,
-	UserRepository,
-	VoterCard
+	UserRepository
 } from "../connection";
 
 export async function createBeneficiary(dto: BeneficiaryDTO): Promise<ResponseDTO<BeneficiaryDTO>> {
@@ -176,6 +175,97 @@ export async function readBeneficiary(id: string, userDocument: string): Promise
 		return { data: dto, statusCode: 200 };
 	} catch (error: any) {
 		return { message: error.message, statusCode: 500 };
+	}
+}
+
+export async function listBeneficiaries(
+	filters: Partial<BeneficiaryDTO> = {},
+	pagination: PaginationDTO = { page: 1, limit: 10, orderBy: { name: "asc" } }
+): Promise<ResponseDTO<BeneficiaryDTO[]>> {
+	try {
+		const beneficiaries: Beneficiary[] = await BeneficiaryRepository.findMany({
+			orderBy: pagination.orderBy,
+			skip: (pagination.page - 1) * pagination.limit,
+			take: pagination.limit,
+			where: {
+				...(filters.name && { name: { contains: filters.name } }),
+				...(filters.birthDate && { birthDate: new Date(filters.birthDate) }),
+				...(filters.gender && { gender: filters.gender }),
+				...(filters.generalRecord && { generalRecord: filters.generalRecord }),
+				...(filters.personalRecord && { personalRecord: filters.personalRecord }),
+				...(filters.motherName && { motherName: { contains: filters.motherName } }),
+				...(filters.referee && { referee: { contains: filters.referee } }),
+				...(filters.address && {
+					address: {
+						is: {
+							...(filters.address.space && { space: { contains: filters.address.space } }),
+							...(filters.address.number && { number: filters.address.number }),
+							...(filters.address.complement && { complement: { contains: filters.address.complement } }),
+							...(filters.address.neighborhood && { neighborhood: { contains: filters.address.neighborhood } }),
+							...(filters.address.city && { city: { contains: filters.address.city } }),
+							...(filters.address.state && { state: filters.address.state }),
+							...(filters.address.zip && { zip: filters.address.zip }),
+						}
+					}
+				}),
+				...(filters.comorbidities && filters.comorbidities.length > 0 && {
+					comorbidities: { some: { name: { in: filters.comorbidities } } }
+				}),
+				...(filters.phoneNumbers && filters.phoneNumbers.length > 0 && {
+					phoneNumbers: { some: { number: { in: filters.phoneNumbers } } }
+				}),
+				...(filters.responsible && filters.responsible.document && {
+					responsible: { is: { document: filters.responsible.document } }
+				}),
+				...(filters.voterCard && {
+					voterCard: {
+						is: {
+							...(filters.voterCard.registration && { registration: filters.voterCard.registration }),
+							...(filters.voterCard.section && { section: filters.voterCard.section }),
+							...(filters.voterCard.zone && { zone: filters.voterCard.zone })
+						}
+					}
+				})
+			},
+			include: {
+				address: true,
+				comorbidities: true,
+				phoneNumbers: true,
+				voterCard: true,
+				responsible: true
+			}
+		});
+
+		const dto: BeneficiaryDTO[] = beneficiaries.map((beneficiary) => ({
+			name: beneficiary.name,
+			birthDate: beneficiary.birthDate.getTime(),
+			gender: beneficiary.gender,
+			generalRecord: beneficiary.generalRecord,
+			personalRecord: beneficiary.personalRecord,
+			motherName: beneficiary.motherName,
+			referee: beneficiary.referee,
+			address: {
+				space: beneficiary.address?.space,
+				number: beneficiary.address?.number,
+				complement: beneficiary.address?.complement,
+				neighborhood: beneficiary.address?.neighborhood,
+				city: beneficiary.address?.city,
+				state: beneficiary.address?.state,
+				zip: beneficiary.address?.zip
+			},
+			comorbidities: beneficiary.comorbidities.map((comorbidity) => comorbidity.name),
+			phoneNumbers: beneficiary.phoneNumbers.map((phone) => phone.number),
+			responsible: { document: beneficiary.responsible.document },
+			voterCard: {
+				registration: beneficiary.voterCard?.registration,
+				section: beneficiary.voterCard?.section,
+				zone: beneficiary.voterCard?.zone,
+			}
+		}));
+
+		return {data: dto, statusCode: 200};
+	} catch (error: any) {
+		return {message: error.message, statusCode: 500};
 	}
 }
 

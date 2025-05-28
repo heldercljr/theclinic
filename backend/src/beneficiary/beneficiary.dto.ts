@@ -1,7 +1,9 @@
+import { $Enums } from "@prisma/client";
+
 export interface BeneficiaryDTO {
 	name: string;
 	birthDate: number;
-	gender: "MALE" | "FEMALE" | "OTHER";
+	gender: $Enums.Gender;
 	generalRecord: string | null;
 	personalRecord: string | null;
 	motherName: string | null;
@@ -13,7 +15,7 @@ export interface BeneficiaryDTO {
 		complement?: string | null;
 		neighborhood?: string | null;
 		city?: string | null;
-		state?: string | null;
+		state?: $Enums.State | null;
 		zip?: string | null;
 	};
 

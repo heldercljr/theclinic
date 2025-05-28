@@ -1,17 +1,26 @@
 import { Request, Response } from "express";
 
 import { BeneficiaryDTO } from "./beneficiary.dto";
+import { PaginationDTO } from "../interfaces/pagination.dto";
 
 import * as Service from "./beneficiary.service";
 
 export async function createBeneficiary(request: Request, response: Response): Promise<void> {
 	const result = await Service.createBeneficiary(request.body as BeneficiaryDTO);
-	
+
 	response.status(result.statusCode).json(result);
 }
 
 export async function readBeneficiary(request: Request, response: Response): Promise<void> {
 	const result = await Service.readBeneficiary(request.params.id, request.user?.document!);
+
+	response.status(result.statusCode).json(result);
+}
+
+export async function listBeneficiaries(request: Request, response: Response): Promise<void> {
+	const { filters, pagination } = request.body as { filters?: BeneficiaryDTO, pagination?: PaginationDTO };
+
+	const result = await Service.listBeneficiaries(filters, pagination);
 
 	response.status(result.statusCode).json(result);
 }
