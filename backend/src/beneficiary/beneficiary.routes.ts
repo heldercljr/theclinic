@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import * as Controller from "./beneficiary.controller";
 
-import { authenticateToken } from "../middlewares/authentication.middleware";
+import { authenticateToken } from "../shared/middlewares/authentication.middleware";
 
 const router: Router = Router();
 

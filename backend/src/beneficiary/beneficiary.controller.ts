@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import { BeneficiaryDTO } from "./beneficiary.dto";
-import { PaginationDTO } from "../interfaces/pagination.dto";
+import { PaginationDTO } from "../shared/interfaces/pagination.dto";
 
 import * as Service from "./beneficiary.service";
 

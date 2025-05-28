@@ -1,6 +1,6 @@
 import { BeneficiaryDTO } from "./beneficiary.dto";
-import { ResponseDTO } from "../interfaces/response.dto";
-import { PaginationDTO } from "../interfaces/pagination.dto";
+import { ResponseDTO } from "../shared/interfaces/response.dto";
+import { PaginationDTO } from "../shared/interfaces/pagination.dto";
 import {
 	AuditRepository,
 	Beneficiary,

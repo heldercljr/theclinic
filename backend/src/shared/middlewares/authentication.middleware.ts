@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { verify } from "jsonwebtoken";
 
-import { UserPayloadDTO } from "user/user.dto";
+import { UserPayloadDTO } from "../../user/user.dto";
 
 declare global {
 	namespace Express {

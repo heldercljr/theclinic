@@ -2,7 +2,7 @@ import { hash, compare } from "bcryptjs";
 import { sign } from "jsonwebtoken";
 
 import { PassWordUpdateDTO, UserAuthenticationDTO, UserDTO, UserPayloadDTO } from "./user.dto";
-import { ResponseDTO } from "../interfaces/response.dto";
+import { ResponseDTO } from "../shared/interfaces/response.dto";
 import { AuditRepository, User, UserRepository } from "../connection";
 
 export async function createUser(dto: UserDTO): Promise<ResponseDTO<UserDTO>> {
