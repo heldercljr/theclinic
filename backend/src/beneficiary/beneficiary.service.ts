@@ -178,7 +178,7 @@ export async function readBeneficiary(id: string, userDocument: string): Promise
 			}
 		});
 
-		return { data: dto, statusCode: 200 };
+		return { data: dto, message, statusCode: 200 };
 	} catch (error: any) {
 		return { message: error.message, statusCode: 500 };
 	}

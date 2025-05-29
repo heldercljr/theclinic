@@ -34,3 +34,9 @@ export async function updateBeneficiary(request: Request, response: Response): P
 
 	response.status(result.statusCode).json(result);
 }
+
+export async function deleteBeneficiary(request: Request, response: Response): Promise<void> {
+	const result = await Service.deleteBeneficiary(request.params.id, request.user?.document!);
+
+	response.status(result.statusCode).json(result);
+}
