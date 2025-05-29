@@ -47,6 +47,7 @@ model Beneficiary {
   gender         Gender
   generalRecord  String?        @unique @db.VarChar(15)
   personalRecord String?        @unique @db.Char(11)
+  healthCard     String?        @unique @db.Char(15)
   motherName     String?        @db.VarChar(100)
   referee        String?        @db.VarChar(100)
   createdAt      DateTime       @default(now())
