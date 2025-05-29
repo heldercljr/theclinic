@@ -18,7 +18,7 @@ export async function createBeneficiary(dto: BeneficiaryDTO): Promise<ResponseDT
 		});
 
 		if (!responsible) {
-			return { message: "Responsible not found", statusCode: 404 };
+			return { message: "Responsável não encontrado", statusCode: 404 };
 		}
 
 		const beneficiary: Beneficiary | null = await BeneficiaryRepository.findFirst({
@@ -39,7 +39,7 @@ export async function createBeneficiary(dto: BeneficiaryDTO): Promise<ResponseDT
 		});
 
 		if (beneficiary) {
-			return { message: "Beneficiary already exists", statusCode: 409 };
+			return { message: "Beneficiário já cadastrado", statusCode: 409 };
 		}
 
 		await BeneficiaryRepository.create({
@@ -73,7 +73,7 @@ export async function createBeneficiary(dto: BeneficiaryDTO): Promise<ResponseDT
 			}
 		});
 
-		const message: string = `Beneficiary ${dto.name.split(" ")[0]} created`;
+		const message: string = `Beneficiário ${dto.name.split(" ")[0]} cadastrado`;
 
 		await AuditRepository.create({
 			data: {
@@ -135,7 +135,7 @@ export async function readBeneficiary(id: string, userDocument: string): Promise
 		const beneficiary: Beneficiary | null = await getBeneficiaryById(id);
 
 		if (!beneficiary) {
-			return { message: "Beneficiary not found", statusCode: 404 };
+			return { message: "Beneficiário não encontrado", statusCode: 404 };
 		}
 
 		const dto: BeneficiaryDTO = {
@@ -168,7 +168,7 @@ export async function readBeneficiary(id: string, userDocument: string): Promise
 			}
 		};
 
-		const message: string = `Beneficiary ${beneficiary.name.split(" ")[0]} read`;
+		const message: string = `Beneficiário ${beneficiary.name.split(" ")[0]} acessado`;
 
 		await AuditRepository.create({
 			data: {
@@ -186,7 +186,8 @@ export async function readBeneficiary(id: string, userDocument: string): Promise
 
 export async function listBeneficiaries(
 	filters: Partial<BeneficiaryDTO> = {},
-	pagination: PaginationDTO = { page: 1, limit: 10, orderBy: { name: "asc" } }
+	pagination: PaginationDTO = { page: 1, limit: 10, orderBy: { name: "asc" } },
+	userDocument: string
 ): Promise<ResponseDTO<BeneficiaryDTO[]>> {
 	try {
 		const beneficiaries: Beneficiary[] = await BeneficiaryRepository.findMany({
@@ -270,7 +271,17 @@ export async function listBeneficiaries(
 			}
 		}));
 
-		return {data: dto, statusCode: 200};
+		const message: string = `${dto.length} beneficiários acessados`;
+
+		await AuditRepository.create({
+			data: {
+				description: message,
+				type: "BENEFICIARY_READ",
+				user: { connect: { document: userDocument } }
+			}
+		});
+
+		return {data: dto, message, statusCode: 200};
 	} catch (error: any) {
 		return {message: error.message, statusCode: 500};
 	}
@@ -285,7 +296,7 @@ export async function updateBeneficiary(
 		const beneficiary: Beneficiary | null = await getBeneficiaryById(id);
 
 		if (!beneficiary) {
-			return { message: "Beneficiary not found", statusCode: 404 };
+			return { message: "Beneficiário não encontrado", statusCode: 404 };
 		}
 
 		await BeneficiaryRepository.delete({ where: { id } });
@@ -322,7 +333,7 @@ export async function updateBeneficiary(
 			}
 		});
 
-		const message: string = `Beneficiary ${dto.name.split(" ")[0]} updated`;
+		const message: string = `Beneficiário ${dto.name.split(" ")[0]} atualizado`;
 
 		await AuditRepository.create({
 			data: {

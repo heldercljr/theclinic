@@ -20,7 +20,7 @@ export async function readBeneficiary(request: Request, response: Response): Pro
 export async function listBeneficiaries(request: Request, response: Response): Promise<void> {
 	const { filters, pagination } = request.body as { filters?: BeneficiaryDTO, pagination?: PaginationDTO };
 
-	const result = await Service.listBeneficiaries(filters, pagination);
+	const result = await Service.listBeneficiaries(filters, pagination, request.user?.document!);
 
 	response.status(result.statusCode).json(result);
 }
