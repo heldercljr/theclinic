@@ -15,13 +15,13 @@ export async function createUser(dto: UserDTO): Promise<ResponseDTO<UserDTO>> {
 		});
 
 		if (!administrator) {
-			return { message: "Administrator not found", statusCode: 404 };
+			return { message: "Administrador não encontrado", statusCode: 404 };
 		}
 
 		const user: User | null = await UserRepository.findUnique({ where: { document: dto.userDocument } });
 
 		if (user) {
-			return { message: "User already exists", statusCode: 409 };
+			return { message: `Usuário ${user.name} já cadastrado`, statusCode: 409 };
 		}
 
 		await UserRepository.create({
@@ -32,7 +32,7 @@ export async function createUser(dto: UserDTO): Promise<ResponseDTO<UserDTO>> {
 			}
 		});
 
-		const message: string = `User ${dto.userName.split(" ")[0]} created`;
+		const message: string = `Usuário ${dto.userName.split(" ")[0]} cadastrado`;
 
 		await AuditRepository.create({
 			data: {
@@ -53,7 +53,7 @@ export async function authenticateUser(dto: UserAuthenticationDTO): Promise<Resp
 		const user: User | null = await UserRepository.findUnique({ where: { document: dto.userDocument } });
 
 		if (!user || !(await compare(dto.userPassWord, user.passWord))) {
-			return { message: "Invalid credentials", statusCode: 401 };
+			return { message: "Credenciais inválidas", statusCode: 401 };
 		}
 
 		const token: string = sign(
@@ -62,7 +62,7 @@ export async function authenticateUser(dto: UserAuthenticationDTO): Promise<Resp
 			{ expiresIn: "1H" }
 		);
 
-		const message: string = `User ${user.name.split(" ")[0]} authenticated`;
+		const message: string = `Usuário ${user.name.split(" ")[0]} autenticado`;
 
 		await AuditRepository.create({
 			data: {
@@ -83,7 +83,7 @@ export async function changeUserPassword(dto: PassWordUpdateDTO): Promise<Respon
 		const user: User | null = await UserRepository.findUnique({ where: { document: dto.document } });
 
 		if (!user || !(await compare(dto.oldPassWord, user.passWord))) {
-			return { message: "Invalid credentials", statusCode: 401 };
+			return { message: "Credenciais inválidas", statusCode: 401 };
 		}
 
 		await UserRepository.update({
@@ -91,7 +91,7 @@ export async function changeUserPassword(dto: PassWordUpdateDTO): Promise<Respon
 			data: { passWord: await hash(dto.newPassWord, 10) }
 		});
 
-		const message: string = `User ${user.name.split(" ")[0]} changed password`;
+		const message: string = `Usuário ${user.name.split(" ")[0]} atualizou a senha`;
 
 		await AuditRepository.create({
 			data: {
