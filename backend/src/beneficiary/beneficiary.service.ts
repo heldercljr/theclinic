@@ -23,7 +23,11 @@ export async function createBeneficiary(dto: BeneficiaryDTO): Promise<ResponseDT
 
 		const beneficiary: Beneficiary | null = await BeneficiaryRepository.findFirst({
 			where: {
-				OR: [ { generalRecord: dto.generalRecord }, { personalRecord: dto.personalRecord } ]
+				OR: [
+					{ generalRecord: dto.generalRecord },
+					{ personalRecord: dto.personalRecord },
+					{ healthCard: dto.healthCard },
+				]
 			},
 			include: {
 				address: true,
@@ -45,6 +49,7 @@ export async function createBeneficiary(dto: BeneficiaryDTO): Promise<ResponseDT
 				gender: dto.gender,
 				generalRecord: dto.generalRecord,
 				personalRecord: dto.personalRecord,
+				healthCard: dto.healthCard,
 				motherName: dto.motherName,
 				referee: dto.referee,
 
@@ -139,6 +144,7 @@ export async function readBeneficiary(id: string, userDocument: string): Promise
 			gender: beneficiary.gender,
 			generalRecord: beneficiary.generalRecord,
 			personalRecord: beneficiary.personalRecord,
+			healthCard: beneficiary.healthCard,
 			motherName: beneficiary.motherName,
 			referee: beneficiary.referee,
 			address: {
@@ -193,6 +199,7 @@ export async function listBeneficiaries(
 				...(filters.gender && { gender: filters.gender }),
 				...(filters.generalRecord && { generalRecord: filters.generalRecord }),
 				...(filters.personalRecord && { personalRecord: filters.personalRecord }),
+				...(filters.healthCard && { healthCard: filters.healthCard }),
 				...(filters.motherName && { motherName: { contains: filters.motherName } }),
 				...(filters.referee && { referee: { contains: filters.referee } }),
 				...(filters.address && {
@@ -291,6 +298,7 @@ export async function updateBeneficiary(
 				gender: dto.gender,
 				generalRecord: dto.generalRecord,
 				personalRecord: dto.personalRecord,
+				healthCard: dto.healthCard,
 				motherName: dto.motherName,
 				referee: dto.referee,
 

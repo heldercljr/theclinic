@@ -4,10 +4,11 @@ export interface BeneficiaryDTO {
 	name: string;
 	birthDate: number;
 	gender: $Enums.Gender;
-	generalRecord: string | null;
-	personalRecord: string | null;
-	motherName: string | null;
-	referee: string | null;
+	generalRecord?: string | null;
+	personalRecord?: string | null;
+	healthCard?: string | null;
+	motherName?: string | null;
+	referee?: string | null;
 
 	address?: {
 		space?: string | null;
