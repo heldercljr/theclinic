@@ -139,6 +139,7 @@ export async function readBeneficiary(id: string, userDocument: string): Promise
 		}
 
 		const dto: BeneficiaryDTO = {
+			id: beneficiary.id,
 			name: beneficiary.name,
 			birthDate: beneficiary.birthDate.getTime(),
 			gender: beneficiary.gender,
@@ -245,6 +246,7 @@ export async function listBeneficiaries(
 		});
 
 		const dto: BeneficiaryDTO[] = beneficiaries.map((beneficiary) => ({
+			id: beneficiary.id,
 			name: beneficiary.name,
 			birthDate: beneficiary.birthDate.getTime(),
 			gender: beneficiary.gender,

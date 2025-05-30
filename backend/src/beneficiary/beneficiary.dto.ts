@@ -1,6 +1,7 @@
 import { $Enums } from "@prisma/client";
 
 export interface BeneficiaryDTO {
+	id?: string;
 	name: string;
 	birthDate: number;
 	gender: $Enums.Gender;
