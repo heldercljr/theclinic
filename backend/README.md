@@ -1,6 +1,6 @@
-# Projeto Aurineth Alves 
+# Projeto The Clinic
 
-## Estrutura do Projeto
+## Estrutura Backend do Projeto
 
 ```
 aurinethalves
@@ -30,7 +30,7 @@ aurinethalves
 │   │   ├── connection.ts                        # Expõe a conexão com o banco de dados através do Prisma
 │   │   └── server.ts                            # Inicia o servidor Express
 │   ├── tests                                    # Contém os testes da aplicação
-│   │   └── example.test.ts
+│   │   └── example.test.ts                      # Ainda não implementados
 │   ├── .env                                     # Variáveis de ambiente
 │   ├── jest.config.js                           # Configuração do Jest
 │   ├── package.json                             # Configuração do npm
