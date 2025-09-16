@@ -3,7 +3,7 @@
 ## Estrutura Backend do Projeto
 
 ```
-aurinethalves
+theclinic
 ├── backend
 │   ├── prisma
 │   │   ├── create_administrator.sql             # Script SQL para criar um Administrador
