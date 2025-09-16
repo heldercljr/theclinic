@@ -1,3 +1,5 @@
+import { AuditType } from "@prisma/client";
+import { AuditRepository } from "connection";
 import winston from "winston";
 import LokiTransport from "winston-loki";
 
@@ -52,4 +54,63 @@ const logger = winston.createLogger({
   ],
 });
 
-export default logger;
+async function auditLog(
+  description: string,
+  type: AuditType,
+  userDocument: string,
+  metadata: Record<string, any> = {}
+): Promise<void> {
+  try {
+    logger.info(description, {
+      auditType: type,
+      userDocument,
+      ...metadata,
+    });
+
+    await AuditRepository.create({
+      data: {
+        description,
+        type,
+        user: { connect: { document: userDocument } },
+      },
+    });
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+
+    logger.error(`Failed to create audit log: ${errorMessage}`, {
+      error: error instanceof Error ? error : String(error),
+      attemptedLog: { description, type, userDocument },
+    });
+  }
+}
+
+function auditError(
+  error: Error,
+  context: string,
+  userDocument?: string,
+  createAuditEntry: boolean = false
+): void {
+  logger.error(`${context}: ${error.message}`, {
+    error: error.stack,
+    userDocument: userDocument || "system",
+  });
+
+  if (createAuditEntry && userDocument) {
+    AuditRepository.create({
+      data: {
+        description: `Error: ${context} - ${error.message}`,
+        type: "SYSTEM_ERROR",
+        user: { connect: { document: userDocument } },
+      },
+    }).catch((err: unknown) => {
+      const errorMessage = err instanceof Error ? err.message : "Unknown error";
+
+      logger.error(`Failed to create audit entry for error: ${errorMessage}`);
+    });
+  }
+}
+
+export { logger };
+export { auditLog, auditError };
+export default { logger, auditLog, auditError };
