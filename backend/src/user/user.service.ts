@@ -1,7 +1,5 @@
 import { hash, compare } from "bcryptjs";
-import { sign } from "jsonwebtoken";
-
-import { PassWordUpdateDTO, UserAuthenticationDTO, UserDTO, UserPayloadDTO } from "./user.dto";
+import { PassWordUpdateDTO, UserDTO } from "./user.dto";
 import { ResponseDTO } from "../shared/interfaces/response.dto";
 import { AuditRepository, User, UserRepository } from "../connection";
 
@@ -43,36 +41,6 @@ export async function createUser(dto: UserDTO): Promise<ResponseDTO<UserDTO>> {
 		});
 
 		return { message, statusCode: 201 };
-	} catch (error: any) {
-		return { message: error.message, statusCode: 500 };
-	}
-}
-
-export async function authenticateUser(dto: UserAuthenticationDTO): Promise<ResponseDTO<{ token: string }>> {
-	try {
-		const user: User | null = await UserRepository.findUnique({ where: { document: dto.userDocument } });
-
-		if (!user || !(await compare(dto.userPassWord, user.passWord))) {
-			return { message: "Credenciais inválidas", statusCode: 401 };
-		}
-
-		const token: string = sign(
-			{ name: user.name, document: user.document } as UserPayloadDTO,
-			process.env.JWT_SECRET as string,
-			{ expiresIn: "1H" }
-		);
-
-		const message: string = `Usuário ${user.name.split(" ")[0]} autenticado`;
-
-		await AuditRepository.create({
-			data: {
-				description: message,
-				type: "USER_AUTHENTICATION",
-				user: { connect: { document: user.document } }
-			}
-		});
-
-		return { data: { token }, message, statusCode: 200 };
 	} catch (error: any) {
 		return { message: error.message, statusCode: 500 };
 	}

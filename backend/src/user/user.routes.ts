@@ -6,8 +6,7 @@ import { authenticateToken } from "../shared/middlewares/authentication.middlewa
 
 const router: Router = Router();
 
-router.post("/users", authenticateToken, Controller.createUser);
-router.post("/users/authenticate", Controller.authenticateUser);
+router.post("/users", Controller.createUser);
 router.put("/users", authenticateToken, Controller.updateUserPassword);
 
 export default router;
