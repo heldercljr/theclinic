@@ -138,4 +138,3 @@ dist
 # Project related
 
 /.idea/
-/backend/prisma/migrations/
