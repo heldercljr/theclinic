@@ -1,5 +1,5 @@
 {
-  "name": "aurineth-backend",
+  "name": "theclinic-backend",
   "version": "1.0.0",
   "main": "src/server.ts",
   "scripts": {
@@ -10,7 +10,7 @@
     "test": "jest"
   },
   "author": "Helder Chaves Leite Junior",
-  "description": "Backend do projeto da Associação Aurineth Alves",
+  "description": "Backend do projeto The Clinic",
   "dependencies": {
     "@prisma/client": "^6.9.0",
     "axios": "^1.12.2",

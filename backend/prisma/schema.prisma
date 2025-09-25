@@ -1,12 +1,9 @@
-// Prisma schema compartilhado com o backend
-// Mantenha sincronizado com o backend!
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -40,8 +37,8 @@ model Beneficiary {
   birthDate      DateTime
   gender         Gender
   generalRecord  String?  @unique @db.VarChar(15)
-  personalRecord String?  @unique @db.Char(11)
-  healthCard     String?  @unique @db.Char(15)
+  personalRecord String?  @unique @db.VarChar(11)
+  healthCard     String?  @unique @db.VarChar(15)
   motherName     String?  @db.VarChar(100)
   referee        String?  @db.VarChar(100)
   createdAt      DateTime @default(now())
@@ -102,7 +99,7 @@ enum Role {
 
 model User {
   name      String   @db.VarChar(100)
-  document  String   @id @unique @db.Char(11)
+  document  String   @id @unique @db.VarChar(11)
   passWord  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -150,7 +147,7 @@ model Address {
   neighborhood String? @db.VarChar(50)
   city         String? @db.VarChar(50)
   state        State?
-  zip          String? @db.Char(8)
+  zip          String? @db.VarChar(8)
 
   beneficiary   Beneficiary? @relation(fields: [beneficiaryId], references: [id], onDelete: Cascade)
   beneficiaryId String?      @unique
@@ -166,9 +163,9 @@ model PhoneNumber {
 
 model VoterCard {
   id           String  @id @default(uuid())
-  registration String? @db.Char(12)
-  section      String? @db.Char(4)
-  zone         String? @db.Char(4)
+  registration String? @db.VarChar(12)
+  section      String? @db.VarChar(4)
+  zone         String? @db.VarChar(4)
 
   beneficiary   Beneficiary? @relation(fields: [beneficiaryId], references: [id], onDelete: Cascade)
   beneficiaryId String?      @unique
