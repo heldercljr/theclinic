@@ -22,6 +22,7 @@ enum AuditType {
   USER_AUTHENTICATION
   USER_UPDATE
   USER_DELETION
+  SYSTEM_ERROR
 }
 
 model Audit {
@@ -30,8 +31,8 @@ model Audit {
   type        AuditType
   createdAt   DateTime  @default(now())
 
-  user        User      @relation(fields: [userId], references: [document])
-  userId      String
+  user   User   @relation(fields: [userId], references: [document])
+  userId String
 }
 
 enum Gender {
@@ -41,40 +42,40 @@ enum Gender {
 }
 
 model Beneficiary {
-  id             String         @id @default(uuid())
-  name           String         @db.VarChar(100)
+  id             String   @id @default(uuid())
+  name           String   @db.VarChar(100)
   birthDate      DateTime
   gender         Gender
-  generalRecord  String?        @unique @db.VarChar(15)
-  personalRecord String?        @unique @db.Char(11)
-  healthCard     String?        @unique @db.Char(15)
-  motherName     String?        @db.VarChar(100)
-  referee        String?        @db.VarChar(100)
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  generalRecord  String?  @unique @db.VarChar(15)
+  personalRecord String?  @unique @db.Char(11)
+  healthCard     String?  @unique @db.Char(15)
+  motherName     String?  @db.VarChar(100)
+  referee        String?  @db.VarChar(100)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  comorbidities  Comorbidity[]
-  responsible    User           @relation(fields: [responsibleId], references: [document])
-  responsibleId  String
-  address        Address?
-  phoneNumbers   PhoneNumber[]
-  voterCard      VoterCard?
-  solicitations  Solicitation[]
+  comorbidities Comorbidity[]
+  responsible   User           @relation(fields: [responsibleId], references: [document])
+  responsibleId String
+  address       Address?
+  phoneNumbers  PhoneNumber[]
+  voterCard     VoterCard?
+  solicitations Solicitation[]
 }
 
 model Comorbidity {
-  id            String       @id @default(uuid())
-  name          String       @db.VarChar(150)
+  id   String @id @default(uuid())
+  name String @db.VarChar(150)
 
-  beneficiary   Beneficiary  @relation(fields: [beneficiaryId], references: [id], onDelete: Cascade)
+  beneficiary   Beneficiary @relation(fields: [beneficiaryId], references: [id], onDelete: Cascade)
   beneficiaryId String
 }
 
 model Solicitation {
-  id            String        @id @default(uuid())
-  date          DateTime
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id        String   @id @default(uuid())
+  date      DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   beneficiary   Beneficiary   @relation(fields: [beneficiaryId], references: [id])
   beneficiaryId String        @unique
@@ -84,16 +85,16 @@ model Solicitation {
 }
 
 model Speciality {
-  id           String        @id @default(uuid())
-  name         String        @db.VarChar(150)
+  id   String @id @default(uuid())
+  name String @db.VarChar(150)
 
   appointments Appointment[]
 }
 
 model Appointment {
-  id             String       @id @default(uuid())
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   solicitation   Solicitation @relation(fields: [solicitationId], references: [id])
   solicitationId String
@@ -107,13 +108,13 @@ enum Role {
 }
 
 model User {
-  name          String                 @db.VarChar(100)
-  document      String                 @id @unique @db.Char(11)
-  passWord      String
-  createdAt     DateTime               @default(now())
-  updatedAt     DateTime               @updatedAt
+  name      String   @db.VarChar(100)
+  document  String   @id @unique @db.Char(11)
+  passWord  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  role          Role                   @default(EMPLOYEE)
+  role          Role           @default(EMPLOYEE)
   audits        Audit[]
   solicitations Solicitation[]
   beneficiaries Beneficiary[]
@@ -150,33 +151,33 @@ enum State {
 }
 
 model Address {
-  id            String       @id @default(uuid())
-  space         String?      @db.VarChar(100)
-  number        String?      @db.VarChar(10)
-  complement    String?      @db.VarChar(50)
-  neighborhood  String?      @db.VarChar(50)
-  city          String?      @db.VarChar(50)
-  state         State?
-  zip           String?      @db.Char(8)
+  id           String  @id @default(uuid())
+  space        String? @db.VarChar(100)
+  number       String? @db.VarChar(10)
+  complement   String? @db.VarChar(50)
+  neighborhood String? @db.VarChar(50)
+  city         String? @db.VarChar(50)
+  state        State?
+  zip          String? @db.Char(8)
 
   beneficiary   Beneficiary? @relation(fields: [beneficiaryId], references: [id], onDelete: Cascade)
   beneficiaryId String?      @unique
 }
 
 model PhoneNumber {
-  id            String      @id @default(uuid())
-  number        String      @db.VarChar(13)
+  id     String @id @default(uuid())
+  number String @db.VarChar(13)
 
   beneficiary   Beneficiary @relation(fields: [beneficiaryId], references: [id], onDelete: Cascade)
   beneficiaryId String
 }
 
 model VoterCard {
-  id           String       @id @default(uuid())
-  registration String?      @db.Char(12)
-  section      String?      @db.Char(4)
-  zone         String?      @db.Char(4)
+  id           String  @id @default(uuid())
+  registration String? @db.Char(12)
+  section      String? @db.Char(4)
+  zone         String? @db.Char(4)
 
-  beneficiary  Beneficiary? @relation(fields: [beneficiaryId], references: [id], onDelete: Cascade)
-  beneficiaryId String?     @unique
+  beneficiary   Beneficiary? @relation(fields: [beneficiaryId], references: [id], onDelete: Cascade)
+  beneficiaryId String?      @unique
 }
