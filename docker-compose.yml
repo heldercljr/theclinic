@@ -36,14 +36,16 @@ services:
     build: ./backend
     depends_on:
       - db
+      - logger-service
     environment:
       DATABASE_URL: ${DATABASE_URL}
       NODE_ENV: ${NODE_ENV}
       HOST: ${HOST}
-      PORT: ${PORT}
+      PORT: 3000
       LOKI_HOST: http://loki:3100
+      LOGGER_SERVICE_URL: http://logger-service:4000/log
     ports:
-      - "${PORT}:3000"
+      - "3000:3000"
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -52,18 +54,28 @@ services:
     build: ./auth-service
     depends_on:
       - db
+      - logger-service
     environment:
       DATABASE_URL: ${DATABASE_URL}
-      JWT_SECRET: ${JWT_SECRET}
       NODE_ENV: ${NODE_ENV}
-      HOST: ${AUTH_HOST}
-      PORT: ${AUTH_PORT}
+      HOST: ${HOST}
+      PORT: 3002
       LOKI_HOST: http://loki:3100
+      LOGGER_SERVICE_URL: http://logger-service:4000/log
     ports:
-      - "${AUTH_PORT}:4000"
+      - "3002:3002"
     volumes:
       - ./auth-service:/app
       - /app/node_modules
+
+  logger-service:
+    build: ./logger-service
+    ports:
+      - "4000:4000"
+    environment:
+      - LOKI_HOST=http://loki:3100
+    depends_on:
+      - loki
 
 volumes:
   db_data:

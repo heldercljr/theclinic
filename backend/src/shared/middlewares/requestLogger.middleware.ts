@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { logger } from "../logger/logger.service";
+import logger from "../logger/logger.service";
 
 export function requestLogger(
   req: Request,
@@ -10,7 +10,7 @@ export function requestLogger(
 
   next();
 
-  res.on("finish", () => {
+  res.on("finish", async () => {
     const duration = Date.now() - start;
 
     const logData = {
@@ -22,17 +22,17 @@ export function requestLogger(
     };
 
     if (res.statusCode >= 500) {
-      logger.error(
+      await logger.error(
         `${req.method} ${req.path} ${res.statusCode} - ${duration}ms`,
         logData
       );
     } else if (res.statusCode >= 400) {
-      logger.warn(
-        `${req.method} ${req.path} ${res.statusCode} - ${duration}ms`,
-        logData
+      await logger.warn(
+          `${req.method} ${req.path} ${res.statusCode} - ${duration}ms`,
+          logData
       );
     } else {
-      logger.info(
+      await logger.info(
         `${req.method} ${req.path} ${res.statusCode} - ${duration}ms`,
         logData
       );

@@ -1,11 +1,12 @@
 import { hash, compare } from "bcryptjs";
 import { PassWordUpdateDTO, UserDTO } from "./user.dto";
 import { ResponseDTO } from "../shared/interfaces/response.dto";
-import { AuditRepository, User, UserRepository } from "../connection";
+import { User as UserModel, UserRepository } from "../connection";
+import logger from "../shared/logger/logger.service";
 
 export async function createUser(dto: UserDTO): Promise<ResponseDTO<UserDTO>> {
 	try {
-		const administrator: User | null = await UserRepository.findUnique({
+		const administrator: UserModel | null = await UserRepository.findUnique({
 			where: {
 				document: dto.responsibleDocument,
 				role: "ADMINISTRATOR"
@@ -16,7 +17,7 @@ export async function createUser(dto: UserDTO): Promise<ResponseDTO<UserDTO>> {
 			return { message: "Administrador não encontrado", statusCode: 404 };
 		}
 
-		const user: User | null = await UserRepository.findUnique({ where: { document: dto.userDocument } });
+		const user: UserModel | null = await UserRepository.findUnique({ where: { document: dto.userDocument } });
 
 		if (user) {
 			return { message: `Usuário ${user.name} já cadastrado`, statusCode: 409 };
@@ -32,23 +33,22 @@ export async function createUser(dto: UserDTO): Promise<ResponseDTO<UserDTO>> {
 
 		const message: string = `Usuário ${dto.userName.split(" ")[0]} cadastrado`;
 
-		await AuditRepository.create({
-			data: {
-				description: message,
-				type: "USER_CREATION",
-				user: { connect: { document: administrator.document } }
-			}
+		logger.info(message, {
+			event: "USER_CREATION",
+			responsible: administrator.document,
+			user: dto.userDocument
 		});
 
 		return { message, statusCode: 201 };
 	} catch (error: any) {
+		logger.error("Erro ao criar usuário", { error: error.message });
 		return { message: error.message, statusCode: 500 };
 	}
 }
 
 export async function changeUserPassword(dto: PassWordUpdateDTO): Promise<ResponseDTO<void>> {
 	try {
-		const user: User | null = await UserRepository.findUnique({ where: { document: dto.document } });
+		const user: UserModel | null = await UserRepository.findUnique({ where: { document: dto.document } });
 
 		if (!user || !(await compare(dto.oldPassWord, user.passWord))) {
 			return { message: "Credenciais inválidas", statusCode: 401 };
@@ -61,16 +61,14 @@ export async function changeUserPassword(dto: PassWordUpdateDTO): Promise<Respon
 
 		const message: string = `Usuário ${user.name.split(" ")[0]} atualizou a senha`;
 
-		await AuditRepository.create({
-			data: {
-				description: message,
-				type: "USER_UPDATE",
-				user: { connect: { document: user.document } }
-			}
+		logger.info(message, {
+			event: "USER_UPDATE",
+			user: dto.document
 		});
 
 		return { message, statusCode: 200 };
 	} catch (error: any) {
+		logger.error("Erro ao atualizar senha de usuário", { error: error.message });
 		return { message: error.message, statusCode: 500 };
 	}
 }

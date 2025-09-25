@@ -1,13 +1,8 @@
 import { BeneficiaryDTO } from "./beneficiary.dto";
 import { ResponseDTO } from "../shared/interfaces/response.dto";
 import { PaginationDTO } from "../shared/interfaces/pagination.dto";
-import {
-	AuditRepository,
-	Beneficiary,
-	BeneficiaryRepository,
-	User,
-	UserRepository
-} from "../connection";
+import { BeneficiaryRepository, User, UserRepository, BeneficiaryFull, SimpleBeneficiary } from "../connection";
+import logger from "../shared/logger/logger.service";
 
 export async function createBeneficiary(dto: BeneficiaryDTO): Promise<ResponseDTO<BeneficiaryDTO>> {
 	try {
@@ -21,7 +16,7 @@ export async function createBeneficiary(dto: BeneficiaryDTO): Promise<ResponseDT
 			return { message: "Responsável não encontrado", statusCode: 404 };
 		}
 
-		const beneficiary: Beneficiary | null = await BeneficiaryRepository.findFirst({
+		const beneficiary: BeneficiaryFull | null = await BeneficiaryRepository.findFirst({
 			where: {
 				OR: [
 					{ generalRecord: dto.generalRecord },
@@ -74,22 +69,19 @@ export async function createBeneficiary(dto: BeneficiaryDTO): Promise<ResponseDT
 		});
 
 		const message: string = `Beneficiário ${dto.name.split(" ")[0]} cadastrado`;
-
-		await AuditRepository.create({
-			data: {
-				description: message,
-				type: "BENEFICIARY_CREATION",
-				user: { connect: { document: responsible.document } }
-			}
-		});
+		await logger.info(message, {
+            event: "BENEFICIARY_CREATION",
+            responsible: responsible.document
+        });
 
 		return { message, statusCode: 201 };
 	} catch (error: any) {
+		await logger.error("Erro ao criar beneficiário", {error: error.message});
 		return { message: error.message, statusCode: 500 };
 	}
 }
 
-async function getBeneficiaryById(id: string): Promise<Beneficiary | null> {
+async function getBeneficiaryById(id: string): Promise<BeneficiaryFull | null> {
 	return BeneficiaryRepository.findUnique({
 		where: { id },
 		include: {
@@ -132,7 +124,7 @@ async function getBeneficiaryById(id: string): Promise<Beneficiary | null> {
 
 export async function readBeneficiary(id: string, userDocument: string): Promise<ResponseDTO<BeneficiaryDTO>> {
 	try {
-		const beneficiary: Beneficiary | null = await getBeneficiaryById(id);
+		const beneficiary: BeneficiaryFull | null = await getBeneficiaryById(id);
 
 		if (!beneficiary) {
 			return { message: "Beneficiário não encontrado", statusCode: 404 };
@@ -170,17 +162,14 @@ export async function readBeneficiary(id: string, userDocument: string): Promise
 		};
 
 		const message: string = `Beneficiário ${beneficiary.name.split(" ")[0]} acessado`;
-
-		await AuditRepository.create({
-			data: {
-				description: message,
-				type: "BENEFICIARY_READ",
-				user: { connect: { document: userDocument } }
-			}
-		});
+		await logger.info(message, {
+            event: "BENEFICIARY_READ",
+            user: userDocument
+        });
 
 		return { data: dto, message, statusCode: 200 };
 	} catch (error: any) {
+		await logger.error("Erro ao ler beneficiário", {error: error.message});
 		return { message: error.message, statusCode: 500 };
 	}
 }
@@ -191,7 +180,7 @@ export async function listBeneficiaries(
 	userDocument: string
 ): Promise<ResponseDTO<BeneficiaryDTO[]>> {
 	try {
-		const beneficiaries: Beneficiary[] = await BeneficiaryRepository.findMany({
+		const beneficiaries: BeneficiaryFull[] = await BeneficiaryRepository.findMany({
 			orderBy: pagination.orderBy,
 			skip: (pagination.page - 1) * pagination.limit,
 			take: pagination.limit,
@@ -274,17 +263,14 @@ export async function listBeneficiaries(
 		}));
 
 		const message: string = `${dto.length} beneficiários acessados`;
-
-		await AuditRepository.create({
-			data: {
-				description: message,
-				type: "BENEFICIARY_READ",
-				user: { connect: { document: userDocument } }
-			}
-		});
+		await logger.info(message, {
+            event: "BENEFICIARY_READ",
+            user: userDocument
+        });
 
 		return {data: dto, message, statusCode: 200};
 	} catch (error: any) {
+		await logger.error("Erro ao listar beneficiários", {error: error.message});
 		return {message: error.message, statusCode: 500};
 	}
 }
@@ -295,7 +281,7 @@ export async function updateBeneficiary(
 	userDocument: string
 ): Promise<ResponseDTO<BeneficiaryDTO>> {
 	try {
-		const beneficiary: Beneficiary | null = await getBeneficiaryById(id);
+		const beneficiary: BeneficiaryFull | null = await getBeneficiaryById(id);
 
 		if (!beneficiary) {
 			return { message: "Beneficiário não encontrado", statusCode: 404 };
@@ -336,43 +322,37 @@ export async function updateBeneficiary(
 		});
 
 		const message: string = `Beneficiário ${dto.name.split(" ")[0]} atualizado`;
-
-		await AuditRepository.create({
-			data: {
-				description: message,
-				type: "BENEFICIARY_UPDATE",
-				user: { connect: { document: userDocument } }
-			}
-		});
+		await logger.info(message, {
+            event: "BENEFICIARY_UPDATE",
+            user: userDocument
+        });
 
 		return { message, statusCode: 200 };
 	} catch (error: any) {
+		await logger.error("Erro ao atualizar beneficiário", {error: error.message});
 		return { message: error.message, statusCode: 500 };
 	}
 }
 
 export async function deleteBeneficiary(id: string, userDocument: string): Promise<ResponseDTO<BeneficiaryDTO>> {
 	try {
-		const beneficiary: Beneficiary | null = await getBeneficiaryById(id);
+		const beneficiary: BeneficiaryFull | null = await getBeneficiaryById(id);
 
 		if (!beneficiary) {
-			return { message: "Beneficiary not found", statusCode: 404 };
+			return { message: "Beneficiário não encontrado", statusCode: 404 };
 		}
 
 		await BeneficiaryRepository.delete({ where: { id } });
 
-		const message: string = `Beneficiary ${beneficiary.name.split(" ")[0]} deleted`;
-
-		await AuditRepository.create({
-			data: {
-				description: message,
-				type: "BENEFICIARY_DELETION",
-				user: { connect: { document: userDocument } }
-			}
-		});
+		const message: string = `Beneficiário ${beneficiary.name.split(" ")[0]} deletado`;
+		await logger.info(message, {
+            event: "BENEFICIARY_DELETION",
+            user: userDocument
+        });
 
 		return { message, statusCode: 204 };
 	} catch (error: any) {
+		await logger.error("Erro ao deletar beneficiário", {error: error.message});
 		return { message: error.message, statusCode: 500 };
 	}
 }

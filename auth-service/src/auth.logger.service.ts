@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const LOGGER_SERVICE_URL =
-  process.env.LOGGER_SERVICE_URL || "http://logger-service:4000/log";
+const LOGGER_SERVICE_URL = process.env.LOGGER_SERVICE_URL || "http://logger-service:4000/log";
 
 async function log(level: string, message: string, metadata: any = {}) {
   try {
@@ -12,11 +11,9 @@ async function log(level: string, message: string, metadata: any = {}) {
   }
 }
 
-const logger = {
+export default {
   info: (msg: string, meta?: any) => log("info", msg, meta),
   warn: (msg: string, meta?: any) => log("warn", msg, meta),
   error: (msg: string, meta?: any) => log("error", msg, meta),
   debug: (msg: string, meta?: any) => log("debug", msg, meta),
 };
-
-export default logger;

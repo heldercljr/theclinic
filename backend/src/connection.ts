@@ -1,46 +1,31 @@
-import {
-	PrismaClient,
-	Address,
-	Appointment,
-	Audit,
-	Beneficiary as SimpleBeneficiary,
-	Comorbidity,
-	Gender,
-	PhoneNumber,
-	Solicitation,
-	Speciality,
-	User,
-	VoterCard
-} from "@prisma/client";
+import { PrismaClient, Address, Appointment, Beneficiary as SimpleBeneficiary, Comorbidity, Gender, PhoneNumber, Solicitation, Speciality, User, VoterCard } from "@prisma/client";
 
-const {
-	address: AddressRepository,
-	appointment: AppointmentRepository,
-	audit: AuditRepository,
-	beneficiary: BeneficiaryRepository,
-	solicitation: SolicitationRepository,
-	speciality: SpecialityRepository,
-	user: UserRepository
-} = new PrismaClient();
+const prisma = new PrismaClient();
 
-type Beneficiary = SimpleBeneficiary & {
-	address: Omit<Address, "id" | "beneficiaryId"> | null;
-	comorbidities: Omit<Comorbidity, "id" | "beneficiaryId">[];
-	phoneNumbers: Omit<PhoneNumber, "id" | "beneficiaryId">[];
-	responsible: Pick<User, "document">;
-	voterCard: Omit<VoterCard, "id" | "beneficiaryId"> | null;
+const AddressRepository = prisma.address;
+const AppointmentRepository = prisma.appointment;
+const BeneficiaryRepository = prisma.beneficiary;
+const SolicitationRepository = prisma.solicitation;
+const SpecialityRepository = prisma.speciality;
+const UserRepository = prisma.user;
+
+export type BeneficiaryFull = SimpleBeneficiary & {
+  address: Omit<Address, "id" | "beneficiaryId"> | null;
+  comorbidities: Omit<Comorbidity, "id" | "beneficiaryId">[];
+  phoneNumbers: Omit<PhoneNumber, "id" | "beneficiaryId">[];
+  responsible: Pick<User, "document">;
+  voterCard: Omit<VoterCard, "id" | "beneficiaryId"> | null;
 };
 
 export {
-	Address, AddressRepository,
-	Appointment, AppointmentRepository,
-	Audit, AuditRepository,
-	Beneficiary, BeneficiaryRepository,
-	Comorbidity,
-	Gender,
-	PhoneNumber,
-	Solicitation, SolicitationRepository,
-	Speciality, SpecialityRepository,
-	User, UserRepository,
-	VoterCard
+  Address, AddressRepository,
+  Appointment, AppointmentRepository,
+  BeneficiaryRepository,
+  Comorbidity,
+  Gender,
+  PhoneNumber,
+  Solicitation, SolicitationRepository,
+  Speciality, SpecialityRepository,
+  User, UserRepository,
+  SimpleBeneficiary
 };

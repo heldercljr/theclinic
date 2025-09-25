@@ -1,14 +1,13 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import logger from "./logger.service.js";
+import logger from "./auth.logger.service.js";
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "defaultsecret";
 
 async function auditLogin(description: string, userDocument?: string) {
-    logger.info(description, {
-        auditType: "USER_AUTHENTICATION",
+    await logger.info(description, {
         userDocument,
     });
 }
