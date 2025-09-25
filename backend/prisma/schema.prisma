@@ -1,3 +1,6 @@
+// Prisma schema compartilhado com o backend
+// Mantenha sincronizado com o backend!
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -23,16 +26,6 @@ enum AuditType {
   USER_UPDATE
   USER_DELETION
   SYSTEM_ERROR
-}
-
-model Audit {
-  id          String    @id @default(uuid())
-  description String
-  type        AuditType
-  createdAt   DateTime  @default(now())
-
-  user   User   @relation(fields: [userId], references: [document])
-  userId String
 }
 
 enum Gender {
@@ -115,7 +108,6 @@ model User {
   updatedAt DateTime @updatedAt
 
   role          Role           @default(EMPLOYEE)
-  audits        Audit[]
   solicitations Solicitation[]
   beneficiaries Beneficiary[]
 }

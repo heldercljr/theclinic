@@ -1,23 +1,16 @@
-import { PrismaClient, AuditType } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import logger from "./logger.service.js";
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "defaultsecret";
 
 async function auditLogin(description: string, userDocument?: string) {
-    try {
-        await prisma.audit.create({
-            data: {
-                description,
-                type: AuditType.USER_AUTHENTICATION,
-                ...(userDocument ? { user: { connect: { document: userDocument } } } : {})
-            }
-        });
-
-    } catch {
-        // Ignora falha de auditoria
-    }
+    logger.info(description, {
+        auditType: "USER_AUTHENTICATION",
+        userDocument,
+    });
 }
 
 export async function authenticateUser(document: string, password: string) {

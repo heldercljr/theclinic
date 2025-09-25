@@ -27,16 +27,6 @@ enum AuditType {
   USER_DELETION
 }
 
-model Audit {
-  id          String    @id @default(uuid())
-  description String
-  type        AuditType
-  createdAt   DateTime  @default(now())
-
-  user   User   @relation(fields: [userId], references: [document])
-  userId String
-}
-
 enum Gender {
   MALE
   FEMALE
@@ -117,7 +107,6 @@ model User {
   updatedAt DateTime @updatedAt
 
   role          Role           @default(EMPLOYEE)
-  audits        Audit[]
   solicitations Solicitation[]
   beneficiaries Beneficiary[]
 }
