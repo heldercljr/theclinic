@@ -33,15 +33,15 @@ export async function createUser(dto: UserDTO): Promise<ResponseDTO<UserDTO>> {
 
 		const message: string = `Usuário ${dto.userName.split(" ")[0]} cadastrado`;
 
-		logger.info(message, {
-			event: "USER_CREATION",
-			responsible: administrator.document,
-			user: dto.userDocument
-		});
+		await logger.info(message, {
+            event: "USER_CREATION",
+            responsible: administrator.document,
+            user: dto.userDocument
+        });
 
 		return { message, statusCode: 201 };
 	} catch (error: any) {
-		logger.error("Erro ao criar usuário", { error: error.message });
+		await logger.error("Erro ao criar usuário", {error: error.message});
 		return { message: error.message, statusCode: 500 };
 	}
 }
