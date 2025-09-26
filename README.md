@@ -1,5 +1,7 @@
 # The Clinic - Ambiente de Microserviços
 
+[Veja itens removidos e justificativas](./REMOVIDOS.md) (como AuditType, AuditRepository, tabelas de auditoria, etc.)
+
 ## Pré-requisitos
 - Docker (https://docs.docker.com/get-docker/)
 - Docker Compose (https://docs.docker.com/compose/install/)
