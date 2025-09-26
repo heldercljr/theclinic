@@ -22,20 +22,22 @@ export function requestLogger(
     };
 
     if (res.statusCode >= 500) {
-      await logger.error(
+      logger.error(
         `${req.method} ${req.path} ${res.statusCode} - ${duration}ms`,
         logData
-      );
+      ).catch(() => {});
+
     } else if (res.statusCode >= 400) {
-      await logger.warn(
+      logger.warn(
           `${req.method} ${req.path} ${res.statusCode} - ${duration}ms`,
           logData
-      );
+      ).catch(() => {});
+
     } else {
-      await logger.info(
+      logger.info(
         `${req.method} ${req.path} ${res.statusCode} - ${duration}ms`,
         logData
-      );
+      ).catch(() => {});
     }
   });
 }

@@ -33,15 +33,15 @@ export async function createUser(dto: UserDTO): Promise<ResponseDTO<UserDTO>> {
 
 		const message: string = `Usuário ${dto.userName.split(" ")[0]} cadastrado`;
 
-		await logger.info(message, {
+		logger.info(message, {
             event: "USER_CREATION",
             responsible: administrator.document,
             user: dto.userDocument
-        });
+        }).catch(() => {});
 
 		return { message, statusCode: 201 };
 	} catch (error: any) {
-		await logger.error("Erro ao criar usuário", {error: error.message});
+		logger.error("Erro ao criar usuário", {error: error.message}).catch(() => {});
 		return { message: error.message, statusCode: 500 };
 	}
 }
@@ -64,7 +64,7 @@ export async function changeUserPassword(dto: PassWordUpdateDTO): Promise<Respon
 		logger.info(message, {
 			event: "USER_UPDATE",
 			user: dto.document
-		});
+		}).catch(() => {});
 
 		return { message, statusCode: 200 };
 	} catch (error: any) {

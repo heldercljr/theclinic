@@ -69,14 +69,14 @@ export async function createBeneficiary(dto: BeneficiaryDTO): Promise<ResponseDT
 		});
 
 		const message: string = `Beneficiário ${dto.name.split(" ")[0]} cadastrado`;
-		await logger.info(message, {
+		logger.info(message, {
             event: "BENEFICIARY_CREATION",
             responsible: responsible.document
-        });
+        }).catch(() => {});
 
 		return { message, statusCode: 201 };
 	} catch (error: any) {
-		await logger.error("Erro ao criar beneficiário", {error: error.message});
+		logger.error("Erro ao criar beneficiário", {error: error.message}).catch(() => {});
 		return { message: error.message, statusCode: 500 };
 	}
 }
@@ -162,14 +162,14 @@ export async function readBeneficiary(id: string, userDocument: string): Promise
 		};
 
 		const message: string = `Beneficiário ${beneficiary.name.split(" ")[0]} acessado`;
-		await logger.info(message, {
+		logger.info(message, {
             event: "BENEFICIARY_READ",
             user: userDocument
-        });
+        }).catch(() => {});
 
 		return { data: dto, message, statusCode: 200 };
 	} catch (error: any) {
-		await logger.error("Erro ao ler beneficiário", {error: error.message});
+		logger.error("Erro ao ler beneficiário", {error: error.message}).catch(() => {});
 		return { message: error.message, statusCode: 500 };
 	}
 }
@@ -263,14 +263,14 @@ export async function listBeneficiaries(
 		}));
 
 		const message: string = `${dto.length} beneficiários acessados`;
-		await logger.info(message, {
+		logger.info(message, {
             event: "BENEFICIARY_READ",
             user: userDocument
-        });
+        }).catch(() => {});
 
 		return {data: dto, message, statusCode: 200};
 	} catch (error: any) {
-		await logger.error("Erro ao listar beneficiários", {error: error.message});
+		logger.error("Erro ao listar beneficiários", {error: error.message}).catch(() => {});
 		return {message: error.message, statusCode: 500};
 	}
 }
@@ -322,14 +322,14 @@ export async function updateBeneficiary(
 		});
 
 		const message: string = `Beneficiário ${dto.name.split(" ")[0]} atualizado`;
-		await logger.info(message, {
+		logger.info(message, {
             event: "BENEFICIARY_UPDATE",
             user: userDocument
-        });
+        }).catch(() => {});
 
 		return { message, statusCode: 200 };
 	} catch (error: any) {
-		await logger.error("Erro ao atualizar beneficiário", {error: error.message});
+		logger.error("Erro ao atualizar beneficiário", {error: error.message}).catch(() => {});
 		return { message: error.message, statusCode: 500 };
 	}
 }
@@ -345,14 +345,14 @@ export async function deleteBeneficiary(id: string, userDocument: string): Promi
 		await BeneficiaryRepository.delete({ where: { id } });
 
 		const message: string = `Beneficiário ${beneficiary.name.split(" ")[0]} deletado`;
-		await logger.info(message, {
+		logger.info(message, {
             event: "BENEFICIARY_DELETION",
             user: userDocument
-        });
+        }).catch(() => {});
 
 		return { message, statusCode: 204 };
 	} catch (error: any) {
-		await logger.error("Erro ao deletar beneficiário", {error: error.message});
+		logger.error("Erro ao deletar beneficiário", {error: error.message}).catch(() => {});
 		return { message: error.message, statusCode: 500 };
 	}
 }

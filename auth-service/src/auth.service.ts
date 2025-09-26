@@ -7,9 +7,9 @@ const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "defaultsecret";
 
 async function auditLogin(description: string, userDocument?: string) {
-    await logger.info(description, {
+    logger.info(description, {
         userDocument,
-    });
+    }).catch(() => {});
 }
 
 export async function authenticateUser(document: string, password: string) {
