@@ -1,4 +1,4 @@
-# The Clinic - Ambiente de Microserviços
+# The Clinic - Sistema de Gestão para Clínicas Médicas
 
 [Veja itens removidos e justificativas](./REMOVIDOS.md) (como AuditType, AuditRepository, tabelas de auditoria, etc.)
 
@@ -80,3 +80,8 @@
 
 ## Scripts de Teste
 - O diretório `scripts/` contém exemplos para simular tráfego e gerar logs/métricas para demonstração.
+
+---
+## Observações para Implementações Futuras
+
+Veja [OBSERVACOES_FUTURAS.md](./OBSERVACOES_FUTURAS.md) para detalhes sobre melhorias planejadas.
