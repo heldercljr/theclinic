@@ -8,8 +8,20 @@ const router: Router = Router();
 
 router.post("/beneficiaries", authenticateToken, Controller.createBeneficiary);
 router.get("/beneficiaries/:id", authenticateToken, Controller.readBeneficiary);
-router.get("/beneficiaries/list", authenticateToken, Controller.listBeneficiaries);
-router.put("/beneficiaries/:id", authenticateToken, Controller.updateBeneficiary);
-router.delete("/beneficiaries/:id", authenticateToken, Controller.deleteBeneficiary);
+router.get(
+  "/beneficiaries/list",
+  authenticateToken,
+  Controller.listBeneficiaries
+);
+router.put(
+  "/beneficiaries/:id",
+  authenticateToken,
+  Controller.updateBeneficiary
+);
+router.delete(
+  "/beneficiaries/:id",
+  authenticateToken,
+  Controller.deleteBeneficiary
+);
 
 export default router;
